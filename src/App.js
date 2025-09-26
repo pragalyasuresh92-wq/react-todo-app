@@ -19,8 +19,8 @@ export default class App extends Component {
 
   refreshList = () => {
     axios
-      .get("api/v1/tasks")
-      .then((res) => this.setState({ todoList: res.data.tasks }))
+      .get("/todo/api/v1/todos/")
+      .then((res) => this.setState({ todoList: res.data }))
       .catch((err) => console.log(err));
   };
 
@@ -40,26 +40,29 @@ export default class App extends Component {
     this.setState({
       editItem: false,
     });
-    // alert("Save :: " + JSON.stringify(item));
-    if (item._id) {
+    
+    if (item.id) {
       axios
-        .patch(`/api/v1/tasks/${item._id}/`, item)
-        .then((res) => this.refreshList());
+        .put(`/todo/api/v1/todos/${item.id}/`, item)
+        .then((res) => this.refreshList())
+        .catch((err) => console.log(err));
       return;
     }
-    axios.post("/api/v1/tasks/", item).then((res) => this.refreshList());
+    axios
+      .post("/todo/api/v1/todos/", item)
+      .then((res) => this.refreshList())
+      .catch((err) => console.log(err));
   };
 
   handleEdit = (item) => {
     this.setState({ activeItem: item, editItem: true });
-    // alert("Edit :: " + JSON.stringify(item));
   };
 
   handleDelete = (item) => {
-    // alert("Delete :: " + JSON.stringify(item));
     axios
-      .delete(`/api/v1/tasks/${item._id}/`)
-      .then((res) => this.refreshList());
+      .delete(`/todo/api/v1/todos/${item.id}/`)
+      .then((res) => this.refreshList())
+      .catch((err) => console.log(err));
   };
 
   render() {

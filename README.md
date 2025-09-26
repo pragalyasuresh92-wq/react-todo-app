@@ -1,6 +1,6 @@
-# Build a CRUD App in React
+# Build a CRUD App in React with Django Backend
 
-In this article, We'll walk step-by-step through the process of building out a simple React CRUD app with Web API. It will have tasks, we'll be able to add, update, list or delete tasks.
+This is a Todo application built with React that connects to a Django REST Framework backend. It will have tasks that we can create, read, update, list, and delete.
 
 ## Prerequisites
 
@@ -34,7 +34,7 @@ Once you run this command, a new window will popup at `localhost:3000` with our 
 Now, We'll install `bootstrap` to provide user interface to our app.
 
 ```bash
-npm install bootstrap@4.6.0
+npm install bootstrap@5.3.8
 ```
 
 Go ahead and delete everything from the `/src` folder except `App.js`, `index.js`, and `index.css`.
@@ -685,18 +685,18 @@ These are endpoints that Node.js Express App will release, you can learn how to 
 
 | ENDPOINT          | METHOD | DESCRIPTION        |
 | ----------------- | ------ | ------------------ |
-| /api/v1/tasks     | GET    | Get all tasks      |
-| /api/v1/tasks     | POST   | Create a new task  |
-| /api/v1/tasks/:id | GET    | Get a task details |
-| /api/v1/tasks/:id | PATCH  | Update a task      |
-| /api/v1/tasks/:id | DELETE | Delete a task      |
+| /todo/api/v1/todos/   | GET    | Get all tasks      |
+| /todo/api/v1/todos/   | POST   | Create a new task  |
+| /todo/api/v1/todos/:id/ | GET    | Get a task details |
+| /todo/api/v1/todos/:id/ | PUT    | Update a task      |
+| /todo/api/v1/todos/:id/ | DELETE | Delete a task      |
 
 Now, we will modify the application so that it interacts with the above Web APIs.
 
 To make requests to the API endpoints on the backend server, we will install a JavaScript library called `axios`.
 
 ```bash
-npm install axios@0.21.1
+npm install axios bootstrap@5.3.8 reactstrap
 ```
 
 Then open the `package.json` file in code editor and add a `proxy`:
@@ -707,18 +707,20 @@ Then open the `package.json` file in code editor and add a `proxy`:
   "name": "todos",
   "version": "0.1.0",
   "private": true,
-  "proxy": "http://localhost:5000",
+  "proxy": "http://localhost:8000",
   "dependencies": {
-    "axios": "^0.21.1",
-    "bootstrap": "^4.6.0",
+    "axios": "^1.12.2",
+    "bootstrap": "^5.3.8",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
-    "react-scripts": "4.0.3",
+    "react-scripts": "^5.0.1",
+    "reactstrap": "^8.9.0",
+    "web-vitals": "^1.1.2"
   },
 [...]
 ```
 
-The `proxy` will help in tunneling API requests to `http://localhost:5000` where the backend application will handle them. Without this `proxy`, you would need to specify full paths:
+The `proxy` will help in tunneling API requests to `http://localhost:8000` where the Django backend application will handle them. Without this `proxy`, you would need to specify full paths:
 
 ```js
 axios.get("http://localhost:5000/api/v1/todos/");
@@ -757,8 +759,8 @@ export default class App extends Component {
 
   refreshList = () => {
     axios
-      .get("api/v1/tasks")
-      .then((res) => this.setState({ todoList: res.data.tasks }))
+      .get("/todo/api/v1/todos/")
+      .then((res) => this.setState({ todoList: res.data }))
       .catch((err) => console.log(err));
   };
 
@@ -778,26 +780,29 @@ export default class App extends Component {
     this.setState({
       editItem: false,
     });
-    // alert("Save :: " + JSON.stringify(item));
-    if (item._id) {
+    
+    if (item.id) {
       axios
-        .patch(`/api/v1/tasks/${item._id}/`, item)
-        .then((res) => this.refreshList());
+        .put(`/todo/api/v1/todos/${item.id}/`, item)
+        .then((res) => this.refreshList())
+        .catch((err) => console.log(err));
       return;
     }
-    axios.post("/api/v1/tasks/", item).then((res) => this.refreshList());
+    axios
+      .post("/todo/api/v1/todos/", item)
+      .then((res) => this.refreshList())
+      .catch((err) => console.log(err));
   };
 
   handleEdit = (item) => {
     this.setState({ activeItem: item, editItem: true });
-    // alert("Edit :: " + JSON.stringify(item));
   };
 
   handleDelete = (item) => {
-    // alert("Delete :: " + JSON.stringify(item));
     axios
-      .delete(`/api/v1/tasks/${item._id}/`)
-      .then((res) => this.refreshList());
+      .delete(`/todo/api/v1/todos/${item.id}/`)
+      .then((res) => this.refreshList())
+      .catch((err) => console.log(err));
   };
 
   render() {
