@@ -1,21 +1,19 @@
-import React, { Component } from "react";
+import React from "react";
 import TodoItem from "./TodoItem";
 
-export default class TodoList extends Component {
-  render() {
-    const { items, handleEdit, handleDelete } = this.props;
-    return (
-      <ul className="list-group my-2">
-        {items.map((item) => {
-          return (
-            <TodoItem
-              item={item}
-              handleEdit={handleEdit}
-              handleDelete={handleDelete}
-            />
-          );
-        })}
-      </ul>
-    );
-  }
-}
+const TodoList = ({ items, handleEdit, handleDelete }) => {
+  return (
+    <ul className="list-group my-2">
+      {items.map((item) => (
+        <TodoItem
+          key={item._id}
+          item={item}
+          handleEdit={handleEdit}
+          handleDelete={handleDelete}
+        />
+      ))}
+    </ul>
+  );
+};
+
+export default TodoList;

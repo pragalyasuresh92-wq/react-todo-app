@@ -43,7 +43,7 @@ In `index.js`, add the following lines of code:
 
 ```js
 // src/index.js
-import React, { Component } from "react";
+import React from "react";
 import ReactDOM from "react-dom";
 import App from "./App";
 import "./index.css";
@@ -56,23 +56,23 @@ Now open `App.js` and add the following lines of code, which will display our ap
 
 ```js
 // src/App.js
-import React, { Component } from "react";
+import React from "react";
 
-export default class App extends Component {
-  render() {
-    return (
-      <div className="container">
-        <h1 className="text-uppercase text-center my-2">Todo App</h1>
-        <div className="row">
-          <div className="col-8 col-md-6 mx-auto mt-2">
-            <h3 className="text-capitalize text-center">Todo Input</h3>
-            <h3 className="text-capitalize text-center">Todo List</h3>
-          </div>
+const App = () => {
+  return (
+    <div className="container">
+      <h1 className="text-uppercase text-center my-2">Todo App</h1>
+      <div className="row">
+        <div className="col-8 col-md-6 mx-auto mt-2">
+          <h3 className="text-capitalize text-center">Todo Input</h3>
+          <h3 className="text-capitalize text-center">Todo List</h3>
         </div>
       </div>
-    );
-  }
+    </div>
+  );
 }
+
+export default App;
 ```
 
 We'll now create basic layout with three components as shown in below reference layout:
@@ -91,38 +91,38 @@ Create a `src/components/TodoInput.js` file and add the contents with the follow
 
 ```js
 // src/components/TodoInput.js
-import React, { Component } from "react";
+import React from "react";
 
-export default class TodoInput extends Component {
-  render() {
-    return (
-      <div className="card card-body">
-        <form action="">
-          <div className="form-group">
-            <label>Title</label>
-            <input
-              type="text"
-              name="title"
-              className="form-control text-capitalize"
-              placeholder="add todo item"
-            />
-          </div>
-          <div className="form-group form-check">
-            <input
-              type="checkbox"
-              name="completed"
-              className="form-check-input"
-            />
-            <label className="form-check-label">Completed</label>
-          </div>
-          <button type="submit" className="btn btn-primary mt-2">
-            Add
-          </button>
-        </form>
-      </div>
-    );
-  }
-}
+const TodoInput = () => {
+  return (
+    <div className="card card-body">
+      <form action="">
+        <div className="form-group">
+          <label>Title</label>
+          <input
+            type="text"
+            name="title"
+            className="form-control text-capitalize"
+            placeholder="add todo item"
+          />
+        </div>
+        <div className="form-group form-check">
+          <input
+            type="checkbox"
+            name="completed"
+            className="form-check-input"
+          />
+          <label className="form-check-label">Completed</label>
+        </div>
+        <button type="submit" className="btn btn-primary mt-2">
+          Add
+        </button>
+      </form>
+    </div>
+  );
+};
+
+export default TodoInput;
 ```
 
 ### TodoItem
@@ -133,21 +133,21 @@ Create a `src/components/TodoItem.js` file and add the contents with the followi
 
 ```js
 // src/components/TodoItem.js
-import React, { Component } from "react";
+import React from "react";
 
-export default class TodoItem extends Component {
-  render() {
-    return (
-      <li className="list-group-item d-flex justify-content-between align-items-center">
-        <span className="todo-title mr-2">Title</span>
-        <span>
-          <button className="btn btn-secondary mr-2">Edit</button>
-          <button className="btn btn-danger">Delete</button>
-        </span>
-      </li>
-    );
-  }
-}
+const TodoItem = () => {
+  return (
+    <li className="list-group-item d-flex justify-content-between align-items-center">
+      <span className="todo-title mr-2">Title</span>
+      <span>
+        <button className="btn btn-secondary mr-2">Edit</button>
+        <button className="btn btn-danger">Delete</button>
+      </span>
+    </li>
+  );
+};
+
+export default TodoItem;
 ```
 
 ### TodoList
@@ -158,18 +158,18 @@ Create a `src/components/TodoList.js` file and add the contents with the followi
 
 ```js
 // src/components/TodoList.js
-import React, { Component } from "react";
+import React from "react";
 import TodoItem from "./TodoItem";
 
-export default class TodoList extends Component {
-  render() {
-    return (
-      <ul className="list-group my-2">
-        <TodoItem />
-      </ul>
-    );
-  }
-}
+const TodoList = () => {
+  return (
+    <ul className="list-group my-2">
+      <TodoItem />
+    </ul>
+  );
+};
+
+export default TodoList;
 ```
 
 Finally, import `TodoItem` and `TodoList` in `App.js` as below:
@@ -211,7 +211,7 @@ Open the `src/App.js` file in code editor and add the following lines of code:
 
 ```js
 // src/App.js
-import React, { Component } from "react";
+import React, { useState } from "react";
 import TodoInput from "./components/TodoInput";
 import TodoList from "./components/TodoList";
 
@@ -238,24 +238,23 @@ const todoItems = [
   },
 ];
 
-export default class App extends Component {
-  state = {
-    todoList: todoItems,
-  };
-  render() {
-    return (
-      <div className="container">
-        <h1 className="text-uppercase text-center my-4">Todo App</h1>
-        <div className="row">
-          <div className="col-8 col-md-6 mx-auto mt-2">
-            <TodoInput />
-            <TodoList items={this.state.todoList} />
-          </div>
+const App = () => {
+  const [todoList, setTodoList] = useState(todoItems);
+
+  return (
+    <div className="container">
+      <h1 className="text-uppercase text-center my-4">Todo App</h1>
+      <div className="row">
+        <div className="col-8 col-md-6 mx-auto mt-2">
+          <TodoInput />
+          <TodoList items={todoList} />
         </div>
       </div>
-    );
-  }
-}
+    </div>
+  );
+};
+
+export default App;
 ```
 
 Now, access that from other side. We'll map through the items data we sent through and We'll pass each item through to the `TodoItem`, once again through props.
@@ -738,96 +737,94 @@ Open the `App.js` file and replace it with this final version:
 
 ```js
 // src/App.js
-import React, { Component } from "react";
+import React, { useState, useEffect } from "react";
 import TodoInput from "./components/TodoInput";
 import TodoList from "./components/TodoList";
 import axios from "axios";
 
-export default class App extends Component {
-  state = {
-    todoList: [],
-    activeItem: {
-      title: "",
-      completed: false,
-    },
-    editItem: false,
-  };
+const App = () => {
+  const [todoList, setTodoList] = useState([]);
+  const [activeItem, setActiveItem] = useState({
+    title: "",
+    completed: false,
+  });
+  const [editItem, setEditItem] = useState(false);
 
-  componentDidMount() {
-    this.refreshList();
-  }
-
-  refreshList = () => {
+  const refreshList = () => {
     axios
       .get("/todo/api/v1/todos/")
-      .then((res) => this.setState({ todoList: res.data }))
+      .then((res) => setTodoList(res.data))
       .catch((err) => console.log(err));
   };
 
-  handleChange = (e) => {
+  useEffect(() => {
+    refreshList();
+  }, []);
+
+  const handleChange = (e) => {
     let { name, value } = e.target;
 
     if (e.target.type === "checkbox") {
       value = e.target.checked;
     }
 
-    const activeItem = { ...this.state.activeItem, [name]: value };
-
-    this.setState({ activeItem });
+    setActiveItem((prevItem) => ({
+      ...prevItem,
+      [name]: value,
+    }));
   };
 
-  handleSubmit = (item) => {
-    this.setState({
-      editItem: false,
-    });
+  const handleSubmit = (item) => {
+    setEditItem(false);
     
     if (item.id) {
       axios
         .put(`/todo/api/v1/todos/${item.id}/`, item)
-        .then((res) => this.refreshList())
+        .then((res) => refreshList())
         .catch((err) => console.log(err));
       return;
     }
     axios
       .post("/todo/api/v1/todos/", item)
-      .then((res) => this.refreshList())
+      .then((res) => refreshList())
       .catch((err) => console.log(err));
   };
 
-  handleEdit = (item) => {
-    this.setState({ activeItem: item, editItem: true });
+  const handleEdit = (item) => {
+    setActiveItem(item);
+    setEditItem(true);
   };
 
-  handleDelete = (item) => {
+  const handleDelete = (item) => {
     axios
       .delete(`/todo/api/v1/todos/${item.id}/`)
-      .then((res) => this.refreshList())
+      .then((res) => refreshList())
       .catch((err) => console.log(err));
   };
 
-  render() {
-    return (
-      <div className="container">
-        <h1 className="text-uppercase text-center my-2">Todo App</h1>
-        <div className="row">
-          <div className="col-8 col-md-6 mx-auto">
-            <TodoInput
-              activeItem={this.state.activeItem}
-              editItem={this.state.editItem}
-              handleChange={this.handleChange}
-              handleSubmit={this.handleSubmit}
-            />
-            <TodoList
-              items={this.state.todoList}
-              handleEdit={this.handleEdit}
-              handleDelete={this.handleDelete}
-            />
-          </div>
+  return (
+    <div className="container">
+      <h1 className="text-uppercase text-center my-2">Todo App</h1>
+      <div className="row">
+        <div className="col-8 col-md-6 mx-auto">
+          <TodoInput
+            activeItem={activeItem}
+            editItem={editItem}
+            handleChange={handleChange}
+            handleSubmit={handleSubmit}
+          />
+          <TodoList
+            items={todoList}
+            handleEdit={handleEdit}
+            handleDelete={handleDelete}
+          />
         </div>
       </div>
-    );
-  }
-}
+    </div>
+  );
+};
+
+export default App;
 ```
 
 The `refreshList()` function is reusable that is called each time an API request is completed. It updates the Todo list to display the most recent list of added items.
