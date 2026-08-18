@@ -1,54 +1,77 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import TodoInput from "./components/TodoInput";
 import TodoList from "./components/TodoList";
-import axios from "axios";
+
+const initialTasks = [
+  {
+    _id: 1,
+    title: "Complete DBMS assignment",
+    completed: true,
+  },
+  {
+    _id: 2,
+    title: "Study Java programming",
+    completed: false,
+  },
+  {
+    _id: 3,
+    title: "Work on mini project",
+    completed: false,
+  },
+  {
+    _id: 4,
+    title: "Review today's notes",
+    completed: false,
+  },
+];
 
 const App = () => {
-  const [todoList, setTodoList] = useState([]);
+  const [todoList, setTodoList] = useState(initialTasks);
+
   const [activeItem, setActiveItem] = useState({
     title: "",
     completed: false,
   });
+
   const [editItem, setEditItem] = useState(false);
 
-  const refreshList = () => {
-    axios
-      .get("/todo/api/v1/todos/")
-      .then((res) => setTodoList(res.data))
-      .catch((err) => console.log(err));
-  };
-
-  useEffect(() => {
-    refreshList();
-  }, []);
-
   const handleChange = (e) => {
-    let { name, value } = e.target;
-
-    if (e.target.type === "checkbox") {
-      value = e.target.checked;
-    }
+    const { name, value, type, checked } = e.target;
 
     setActiveItem((prevItem) => ({
       ...prevItem,
-      [name]: value,
+      [name]: type === "checkbox" ? checked : value,
     }));
   };
 
-  const handleSubmit = (item) => {
-    setEditItem(false);
-    
-    if (item.id) {
-      axios
-        .put(`/todo/api/v1/todos/${item.id}/`, item)
-        .then((res) => refreshList())
-        .catch((err) => console.log(err));
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
+    if (!activeItem.title.trim()) {
       return;
     }
-    axios
-      .post("/todo/api/v1/todos/", item)
-      .then((res) => refreshList())
-      .catch((err) => console.log(err));
+
+    if (editItem) {
+      setTodoList((prevList) =>
+        prevList.map((item) =>
+          item._id === activeItem._id ? activeItem : item
+        )
+      );
+
+      setEditItem(false);
+    } else {
+      const newTask = {
+        ...activeItem,
+        _id: Date.now(),
+      };
+
+      setTodoList((prevList) => [...prevList, newTask]);
+    }
+
+    setActiveItem({
+      title: "",
+      completed: false,
+    });
   };
 
   const handleEdit = (item) => {
@@ -57,30 +80,145 @@ const App = () => {
   };
 
   const handleDelete = (item) => {
-    axios
-      .delete(`/todo/api/v1/todos/${item.id}/`)
-      .then((res) => refreshList())
-      .catch((err) => console.log(err));
+    setTodoList((prevList) =>
+      prevList.filter((task) => task._id !== item._id)
+    );
   };
 
+  const handleToggle = (item) => {
+    setTodoList((prevList) =>
+      prevList.map((task) =>
+        task._id === item._id
+          ? { ...task, completed: !task.completed }
+          : task
+      )
+    );
+  };
+
+  const completedTasks = todoList.filter(
+    (task) => task.completed
+  ).length;
+
+  const totalTasks = todoList.length;
+
   return (
-    <div className="container">
-      <h1 className="text-uppercase text-center my-2">Todo App</h1>
-      <div className="row">
-        <div className="col-8 col-md-6 mx-auto">
+    <div className="mobile-app">
+
+      {/* App content */}
+      <main className="app-content">
+
+        {/* Header */}
+        <header className="app-header">
+          <div>
+            <p className="greeting">Good morning</p>
+            <h1>My Tasks</h1>
+          </div>
+
+          <div className="profile-circle">
+            P
+          </div>
+        </header>
+
+        {/* Progress card */}
+        <section className="progress-card">
+
+          <div className="progress-text">
+            <div>
+              <p>Today's progress</p>
+              <h2>
+                {completedTasks}/{totalTasks}
+              </h2>
+            </div>
+
+            <span className="progress-percent">
+              {totalTasks === 0
+                ? 0
+                : Math.round(
+                    (completedTasks / totalTasks) * 100
+                  )}
+              %
+            </span>
+          </div>
+
+          <div className="progress-bar">
+            <div
+              className="progress-fill"
+              style={{
+                width:
+                  totalTasks === 0
+                    ? "0%"
+                    : `${(completedTasks / totalTasks) * 100}%`,
+              }}
+            />
+          </div>
+
+        </section>
+
+        {/* Add task */}
+        <section className="add-card">
+
+          <div className="section-title">
+            <h2>
+              {editItem ? "Edit task" : "Add a task"}
+            </h2>
+          </div>
+
           <TodoInput
             activeItem={activeItem}
             editItem={editItem}
             handleChange={handleChange}
             handleSubmit={handleSubmit}
           />
+
+        </section>
+
+        {/* Task list */}
+        <section className="tasks-section">
+
+          <div className="tasks-heading">
+            <h2>Today's tasks</h2>
+
+            <span>
+              {totalTasks} tasks
+            </span>
+          </div>
+
           <TodoList
             items={todoList}
             handleEdit={handleEdit}
             handleDelete={handleDelete}
+            handleToggle={handleToggle}
           />
+
+        </section>
+
+      </main>
+
+      {/* Bottom navigation */}
+      <nav className="bottom-nav">
+
+        <div className="nav-item active">
+          <span className="nav-icon">⌂</span>
+          <span>Home</span>
         </div>
-      </div>
+
+        <div className="nav-item">
+          <span className="nav-icon">✓</span>
+          <span>Tasks</span>
+        </div>
+
+        <div className="nav-item">
+          <span className="nav-icon">+</span>
+          <span>Add</span>
+        </div>
+
+        <div className="nav-item">
+          <span className="nav-icon">○</span>
+          <span>Profile</span>
+        </div>
+
+      </nav>
+
     </div>
   );
 };
