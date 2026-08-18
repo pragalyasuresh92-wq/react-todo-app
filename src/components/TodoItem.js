@@ -1,26 +1,65 @@
 import React from "react";
 
-const TodoItem = ({ item, handleEdit, handleDelete }) => {
+const TodoItem = ({
+  item,
+  handleEdit,
+  handleDelete,
+  handleToggle,
+}) => {
+
   return (
-    <li
-      key={item._id}
-      className="list-group-item d-flex justify-content-between align-items-center"
+    <div
+      className={`task-item ${
+        item.completed ? "completed" : ""
+      }`}
     >
-      <span className="mr-2">
-        {item.completed ? <s>{item.title}</s> : item.title}
-      </span>
-      <span>
+
+      <div className="task-left">
+
         <button
-          className="btn btn-secondary mr-2"
+          className={`check-button ${
+            item.completed ? "checked" : ""
+          }`}
+          onClick={() => handleToggle(item)}
+        >
+          {item.completed ? "✓" : ""}
+        </button>
+
+        <div className="task-info">
+
+          <span className="task-title">
+            {item.title}
+          </span>
+
+          <span className="task-status">
+            {item.completed
+              ? "Completed"
+              : "In progress"}
+          </span>
+
+        </div>
+
+      </div>
+
+      <div className="task-actions">
+
+        <button
+          className="edit-button"
           onClick={() => handleEdit(item)}
         >
           Edit
         </button>
-        <button className="btn btn-danger" onClick={() => handleDelete(item)}>
-          Delete
+
+        <button
+          className="delete-button"
+          onClick={() => handleDelete(item)}
+        >
+          ×
         </button>
-      </span>
-    </li>
+
+      </div>
+
+    </div>
   );
 };
 
